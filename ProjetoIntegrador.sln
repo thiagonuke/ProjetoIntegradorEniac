@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34018.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Projeto_Integrador.UI", "Desafio_Processo.UI\Projeto_Integrador.UI.csproj", "{BBFF3C8A-3E78-4E7F-816E-E2F939055A75}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Projeto_Integrador.API", "Desafio_Processo.API\Projeto_Integrador.API.csproj", "{9CA616C4-61AC-4F58-931F-5132AB953B2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBFF3C8A-3E78-4E7F-816E-E2F939055A75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBFF3C8A-3E78-4E7F-816E-E2F939055A75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBFF3C8A-3E78-4E7F-816E-E2F939055A75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBFF3C8A-3E78-4E7F-816E-E2F939055A75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CA616C4-61AC-4F58-931F-5132AB953B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA616C4-61AC-4F58-931F-5132AB953B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CA616C4-61AC-4F58-931F-5132AB953B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CA616C4-61AC-4F58-931F-5132AB953B2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0E9FBAD6-E344-4710-98E8-D5E32B863A0C}
+	EndGlobalSection
+EndGlobal

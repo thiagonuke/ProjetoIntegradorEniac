@@ -1,0 +1,535 @@
+﻿@model Produtos_em_EstoqueViewModel
+@{
+    ViewData["Title"] = "HomePage";
+    var produtos = Model.prods == null ? new List<Produtos_em_EstoqueViewModel>() : Model.prods;
+    
+    var tst = "";
+}
+
+<style>
+    .popup-cadastro {
+        position: fixed;
+        margin: 0 auto;
+        width: 100vw;
+
+        z-index: 999;
+    }
+
+    .modall {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-contentt {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 40px;
+        border: 1px solid #888;
+        width: 40%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .inp{
+        width:60%;
+        margin-bottom:10px;
+        padding: 10px;
+        border-radius:10px;  
+    }
+    #cart-container {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 999;
+  }
+  
+  #cart-button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #cart-content {
+    padding: 20px;
+  }
+  
+  #close-cart {
+    text-align: right;
+    margin-bottom: 10px;
+  }
+
+</style>
+<div class="row text-center">
+    <h1 class="display-4">Bem vindo @Model.Nome!</h1>
+</div>
+
+
+@if (Model.Grupo == "Cliente")
+{
+    <div class="col-md-12 d-flex justify-content-between mt-5"><div><h3>Produtos em destaque:</h3></div> <div> <a id="cart-button" class="d-flex justify-content-center text-decoration-none" style="cursor: pointer;"><i class="fa-solid fa-cart-shopping" style="font-size: 2rem"></i></a></div></div>
+    <br />
+    <div class="container-fluid d-flex flex-column">
+        <div class="row">
+            @if(produtos.Count > 0)
+            {
+                try
+                {
+                    @foreach (var prod in produtos)
+                    {
+                        <div class="card m-1" style="width: 18rem;">
+                            <div class="card-body">
+                                <small class="d-none">@prod.codpro</small>
+                                <h5 class="card-title">@prod.NomeProduto</h5>
+                                <p class="card-text">@prod.Descricao</p>
+                                <p class="card-text">@prod.Pr_Venda R$</p>
+                                <div class="col-md-12">
+                                <button class="btn btn-primary w-100" onclick="AddCart('@prod.codpro')">Adicionar ao carrinho</button>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    }
+
+                }
+                catch (Exception ex) { }
+                
+            }else{
+                <div class="col-md-12 d-flex justify-content-center"><h6 class="text-danger">Produtos não encontrados ou não existentes no momento:(</h6></div>
+            }
+        </div>
+        
+    </div>
+    <div id="cart-container">
+        <div id="close-cart">
+            <button class="btn btn-danger m-1" id="close-button">Fechar</button>
+        </div>
+        <div id="cart-content">
+            <p id="cartempty" class="d-none">Seu carrinho está vazio.</p>
+        </div>
+        <div class="col-md-12 d-flex flex-column justify-content-center align-items-center" id="finalizarCompra">
+            <div class="w-100 d-flex justify-content-around align-content-center">
+                <small><b>Total:</b></small><input type="text" id="totalcarrinho" class="border rounded w-50" style="text-align: right;" disabled />
+            </div>
+            <button class="btn btn-success mt-2" id="finalizarCompra">Finalizar compra</button>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row text-center mt-5"><h3>Gerir Estoque:</h3></div>
+    <br />
+    <div class="col-md-12 d-flex justify-content-between"><h5>Produtos Cadastrados:</h5> <div class="col-md-4 d-flex justify-content-end"><button class="btn btn-success" id="addNovoProd">Adicionar novo produto <i class="fa-solid fa-plus" style="font-size:1rem; color:white;"></i></button></div></div>
+    <div class="container-fluid d-flex flex-column p-3 rounded">
+        <div class="row">
+            @if(produtos.Count > 0)
+            {
+                try
+                {
+                    @foreach(var prod in produtos)
+                    {
+                        <div class="card m-1" style="width: 30rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">@prod.NomeProduto - @prod.codpro</h5>
+                                <p class="card-text">@prod.Descricao</p>
+                                <div class="col-md-12 d-flex justify-content-around">
+                                    <div class="col-md-3 d-flex justify-content-center align-items-center">
+                                        <h6>Qtd: @prod.Quantidade</h6>   
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-warning btn-sm" onclick="editprod('@prod.codpro')" id="editar">Editar Produto <i class="fa-regular fa-pen-to-square"></i></button>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-danger btn-sm" onclick="excluir('@prod.codpro')" id="excluir">Excluir Produto <i class="fa-solid fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                }catch(Exception ex){}
+
+            }
+            else
+            {
+                <div class="col-md-12 d-flex justify-content-center"><h6 class="text-danger">Produtos não encontrados ou não existentes :(</h6></div>
+                <div class="card d-flex justify-content-center align-content-center" style="width: 14rem; height: 20vh;">
+                    <div class="card-body h-100">
+                        <a id="CadastrarPproduto" class="d-flex h-100 align-items-center justify-content-center text-decoration-none" style="cursor: pointer;">
+                        <div class="col-md-6 d-flex justify-content-center align-items-center border border-success rounded-circle h-100">
+                            <i class="fa-solid fa-plus" style="font-size:2rem; color:green;"></i>
+                        </div>
+                        </a>
+                    </div>
+                </div>
+                                       
+            }
+        </div>
+    </div>
+    <div id="myModal" class="modall">
+        <div class="modal-content d-flex justify-content-center align-items-center mt-5 p-2">
+            <div class="col-md-12 d-flex justify-content-end">
+                <span class="close">&times;</span>
+            </div>
+            <h6>Código do produto:</h6>
+            @Html.TextBoxFor(t => t.codpro, new {@class = "inp border", id = "Codpro"})
+            <h6>Nome do Produto:</h6>
+            @Html.TextBoxFor(t => t.NomeProduto, new {@class = "inp border", id = "NomeProd"})
+            <h6>Descrição:</h6>
+            @Html.TextBoxFor(t => t.Descricao, new {@class = "inp border", id = "Descri"})
+            <h6>Quantidade:</h6>
+            @Html.TextBoxFor(t => t.Quantidade, new {@class = "inp border", id = "Quanti"})
+            <h6>Preço:</h6>
+            @Html.TextBoxFor(t => t.Pr_Venda, new {@class = "inp border", id = "preco"})
+            <button class="btn btn-primary" id="InsertProd">Cadastrar</button>
+            <button class="btn btn-primary d-none" id="SalvarEdit">Salvar</button>
+        </div>
+    </div>
+
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://kit.fontawesome.com/c431485b4e.js" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+
+        $('#preco, #Quanti').on('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        $("#cart-button").click(function () {
+            $("#cart-container").css("right", "0");
+        });
+
+        $("#close-button").click(function () {
+            $("#cart-container").css("right", "-300px");
+        });
+
+        const eventSection = $('#cart-content')
+        var total = 0;
+        $.ajax({
+            url: '../Produtos/ProdutosCarrinho',
+            type: 'GET',
+            success: function (data) {
+                debugger
+                if (data == undefined || data == "") {
+                    $('#finalizarCompra').addClass("d-none");
+                    $('#cartempty').removeClass("d-none");
+
+                } else {
+
+                    $('#cart-content').empty();
+                    $('#cartempty').addClass("d-none");
+                    $('#finalizarCompra').removeClass("d-none");
+                    for (const event of data) {
+                        debugger
+                        total += event.pr_Venda
+                        const eventDiv = $('<div>').addClass('border border-dark rounded p-2 m-1') // Adicione uma classe para estilização, se necessário
+                            .append($('<h4>').text(event.nomeProduto)) // Adiciona o nome do evento
+                            .append($('<p>').text(event.descricao + ' ' + event.codpro)) // Adiciona o nome do evento
+                            .append($('<small id="valores">').text('Valor: ' + event.pr_Venda + ',00R$')) // Adiciona a data do evento
+                            .append(
+                                $('<button>').addClass('btn btn-danger ms-5')
+                                    .text('Excluir')
+                                    .click(function () {
+                                        excluircarr(event.codpro); // Chama a função com o nome do evento
+                                    })
+                            );
+                            //.append($('<button>').addClass('btn btn-danger ms-5 excluircarr').text('Excluir')) // Adiciona a data do evento
+
+
+
+                        eventSection.append(eventDiv);
+                    }
+                    $("#totalcarrinho").val(total + ',00');
+                }
+            }
+        })
+
+        
+
+    });
+
+    $("#finalizarCompra").click(function (){
+        bootbox.confirm({
+            message: 'Deseja finalizar a compra dos items?',
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    $.ajax({
+                        url: '../Produtos/FinalizarCompra',
+                        type: 'GET',
+                        success: function (data) {
+                            debugger
+                            if (data.includes("Erro")) {
+                                toastr.error(data)
+                            }else{
+                                toastr.success(data)
+                            }
+                            location.reload()
+                        }
+                    })
+
+                }
+            }
+        });
+        
+
+
+    })
+    function excluircarr(codpro) {
+        debugger
+        $.ajax({
+            url: '../Produtos/ExcluirProdutoCarrinho',
+            type: 'POST',
+            data: { codpro },
+            success: function (data) {
+                location.reload()
+            }
+        })
+    }
+
+    $("#InsertProd").click(function () {
+        if(validarcampos()){
+
+            var dados = {
+                codpro: $("#Codpro").val(),
+                NomeProduto: $("#NomeProd").val(),
+                Quantidade: $("#Quanti").val(),
+                Pr_Venda: $("#preco").val(),
+                Descricao: $("#Descri").val()
+
+            }
+
+            $.ajax({
+                url: '../Produtos/CadastrarProduto',
+                type: 'POST',
+                data: { dados },
+                success: function (data) { 
+                    if (!data.includes("Erro")) {
+                        toastr.success(data)
+                        location.reload()
+                    }else{
+
+                        toastr.error(data);
+                    }
+                }
+            })
+        
+        
+        
+        }
+    })
+
+    function editprod(data){
+        const codpro = data;
+
+        $.ajax({
+            url: '../Produtos/ListarProdutoEdit',
+            type: 'GET',
+            data: { codpro },
+            success: function (data) {
+                debugger
+                if(data != null){
+                    modal.style.display = "block";
+                     $("#Codpro").val(data.codpro)
+                     $("#Codpro").prop("disabled", true)
+                     $("#NomeProd").val(data.nomeProduto)
+                     $("#Quanti").val(data.quantidade)
+                     $("#preco").val(data.pr_Venda)
+                     $("#Descri").val(data.descricao)
+                     $("#InsertProd").addClass("d-none")
+                     $("#SalvarEdit").removeClass("d-none")
+                }
+            }
+
+        })
+    }
+        
+    $("#SalvarEdit").click(function (){
+        if (validarcampos()){
+            var dados = {
+                codpro: $("#Codpro").val(),
+                NomeProduto: $("#NomeProd").val(),
+                Quantidade: $("#Quanti").val(),
+                Pr_Venda: $("#preco").val(),
+                Descricao: $("#Descri").val()
+
+            }
+
+            $.ajax({
+                url: '../Produtos/SalvarEditProd',
+                type: 'POST',
+                data: { dados },
+                success: function (data) {
+                    debugger
+                    if (data.status == true) {
+                        toastr.success(data.mensagem)
+                        location.reload()
+                    } else {toastr.error(data.mensagem) }
+                }
+
+            })
+        }
+       
+
+    })
+
+    function excluir(data){
+
+        const codpro = data;
+
+        bootbox.confirm({
+            message: `Deseja Excluir o produto ${codpro}?`,
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                }
+            },
+            callback: function (result) {
+                if (result == true) {
+                    $.ajax({
+                        url: '../Produtos/ExcluirProduto',
+                        type: 'POST',
+                        data: { codpro },
+                        success: function (data) {
+                            if (!data.includes("Erro")) {
+                                toastr.success(data)
+                                location.reload()
+                            } else {
+
+                                toastr.error(data);
+                            }
+                        }
+                    })
+
+                }
+            }
+        });
+    }
+    function AddCart(codpro) {
+
+        $.ajax({
+            url: '../Produtos/AdicionarCart',
+            type: 'POST',
+            data: { codpro },
+            success: function (data) {
+               location.reload()
+            }
+        })
+
+    }
+
+
+    const openModalBtn = document.getElementById("CadastrarPproduto");
+    const modal = document.getElementById("myModal");
+    const closeBtn = document.querySelector(".close");
+
+    $("#addNovoProd, #CadastrarPproduto").click(function () {
+        modal.style.display = "block";
+        $("#InsertProd").removeClass("d-none")
+        $("#SalvarEdit").addClass("d-none")
+        $("#Codpro").val("")
+        $("#NomeProd").val("")
+        $("#Quanti").val("")
+        $("#preco").val("")
+        $("#Descri").val("")
+        $("#InsertProd").removeClass("d-none")
+        $("#SalvarEdit").addClass("d-none")
+    })
+    $(".close").click(function () {
+        modal.style.display = "none";
+    })
+
+    // openModalBtn.addEventListener("click", () => {
+    //     modal.style.display = "block";
+    // });
+
+
+    closeBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+
+
+    function validarcampos(){
+
+        var validado = false;
+
+        if ($("#Codpro").val() == "") {
+            toastr.error("Preencha o campo codpro!")
+            return validado;
+        }
+        if ($("#NomeProd").val() == "") {
+            toastr.error("Preencha o campo Nome do Produto!")
+            return validado;
+        }
+        if ($("#Descri").val() == "") {
+            toastr.error("Preencha o campo Descrição!")
+            return validado;
+        }
+        if ($("#Quanti").val() == "") {
+            toastr.error("Preencha o campo de Quantidade!")
+            return validado;
+        } 
+        if ($("#preco").val() == "") {
+            toastr.error("Preencha o campo de Preço!")
+            return validado;
+        }else{
+            validado = true;
+            return validado;
+        }
+    }
+</script>

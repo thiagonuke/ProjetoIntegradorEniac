@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "yFzXBtmWrtU/iRGkHXL66aShiYaEv8/SWgNCRDMQggZAGYXNLcdM0viqIQl/mlPAFth6UvA/TT2yM5E/en95dQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\mthia\\Source\\Repos\\Projeto-API-Vendas\\Desafio_Processo.UI\\Projeto_Integrador.UI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mthia\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

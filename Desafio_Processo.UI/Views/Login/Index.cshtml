@@ -1,0 +1,209 @@
+﻿@model CadastrosViewModel;
+
+<style>
+    .area-login{
+        height: 80vh;
+        border-radius: 10px 20px;
+    }
+    #Lgout{
+        display: none;
+    }
+
+    #senha, #Email, #senharpt, #emailrpt, #Senhacd, #emailcd, #Nome {
+        width:50%;
+        border-radius: 5px;
+        border: 1px solid black;
+    }
+</style>
+
+
+
+<body>
+    <div class="container-fluid justify-content-center">
+        <div class="col-md-12 d-flex justify-content-around align-items-center Larger shadow border border-dark area-login">
+            <div><h3>Faça login para entrar!</h3></div>
+            <div class="col-md-6 p-4 h-50 d-flex rounded flex-column justify-content-evenly border border-dark" id="entrar">
+                <div class="row d-flex  align-items-center justify-content-center">
+                    <span>Email:</span>
+                    @Html.TextBoxFor(t => t.Email, new {})
+                </div>
+                <div class="row d-flex align-items-center justify-content-center">
+                    <span>Senha:</span>
+                    @Html.PasswordFor(t => t.senha, new {})
+                </div>
+                <div class="col-md-11 mt-2 d-flex justify-content-end">
+                    <div class="co-md-1">
+                        <button id="EntrarLogin" class="btn-success">Entrar</button>
+                    </div>
+                </div>
+                <small id="Cadastrar">Ainda não possui conta? Cadastra-se aqui!</small>
+            </div>
+            <div class="col-md-6 p-4 h-75 d-flex flex-column justify-content-evenly border border-dark d-none" id="cadastrar">
+                <div class="row">
+                    <div class="col-md-1">
+                        <a id="voltar">
+                            <i class="fa-solid fa-arrow-left" style="font-size: 1rem"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="row d-flex  align-items-center justify-content-center">
+                    <span class="col-md-4">Nome:</span>
+                    @Html.TextBoxFor(t => t.Nome, new { id = "Nome"})
+                </div>
+                <div class="row d-flex  align-items-center justify-content-center">
+                    <span class="col-md-4">Email:</span>
+                    @Html.TextBoxFor(t => t.Email, new { id = "emailcd"})
+                </div>
+                <div class="row d-flex  align-items-center justify-content-center">
+                    <span class="col-md-4">Repita o email:</span>
+                    <input type="text" id="emailrpt">
+                </div>
+                <div class="row d-flex align-items-center justify-content-center">
+                    <span class="col-md-4">Senha:</span>
+                    @Html.PasswordFor(t => t.senha, new { id = "Senhacd" })
+                </div>
+                <div class="row d-flex align-items-center justify-content-center">
+                    <span class="col-md-4">Repita Senha:</span>
+                    <input type="password" id="senharpt">
+                </div>
+                <div class="col-md-11 mt-2 d-flex mt-2 justify-content-end align-items-center">
+                    <div class="co-md-1">
+                        <button class="btn-success" id="cadastro">Cadastrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://kit.fontawesome.com/c431485b4e.js" crossorigin="anonymous"></script>
+<script>
+
+
+    $("#Cadastrar").click(function () {
+        $("#entrar").addClass("d-none");
+        $("#cadastrar").removeClass("d-none");
+    })
+
+    $("#voltar").click(function () {
+        $("#entrar").removeClass("d-none");
+        $("#cadastrar").addClass("d-none");
+    })
+
+
+    $("#cadastro").click(function (){
+
+        if (validacamposcadastro()) {
+            var dados = {
+                Nome: $("#Nome").val(),
+                email: $("#emailcd").val(),
+                Senha: $("#Senhacd").val()
+            }
+
+            $.ajax({
+                url: '../Home/CadastroUsuario',
+                type: 'POST',
+                data: {dados},
+                success: function (data) {
+                    debugger
+                    if(data == "Success"){
+                        toastr.success("Usuario Cadastrado!")
+                        $("#entrar").removeClass("d-none");
+                        $("#cadastrar").addClass("d-none");
+
+                    }else{
+                        toastr.success("Usuario já Cadastrado!<br /> Faça login para prosseguir no sistema.")
+                        $("#entrar").removeClass("d-none");
+                        $("#cadastrar").addClass("d-none");
+                    }
+                }
+            })
+        }
+
+    })
+
+    $("#EntrarLogin").click(function (){
+        if(validacamposLogin()){
+            var dados = {
+                Email:$("#Email").val(),
+                senha: $("#senha").val()
+            }
+
+            $.ajax({
+                url: '../Home/Login',
+                type: 'POST',
+                data: { dados },
+                success: function (data) {
+                    if (data != "Erro") {
+                        window.location.href = "../Home/Index";
+                    } else {
+                        toastr.error("Email ou senhas incorretos!")
+                    }
+                }
+            })
+        }
+    })
+
+    function validacamposLogin(){
+        var validado = false;
+
+        if ($("#Email").val() == "") {
+            toastr.error("Preencha o campo Email!")
+            return validado;
+        }
+        if ($("#senha").val() == "") {
+            toastr.error("Preencha o campo Senha!")
+            return validado;
+
+        }else{
+            validado = true;
+
+            return validado;
+        }
+    }
+
+    function validacamposcadastro() {
+
+        var validado = false;
+
+        if ($("#Nome").val() == "") {
+            toastr.error("Preencha o campo Nome!")
+            return validado;
+        }   
+        if ($("#emailcd").val() == "") {
+            toastr.error("Preencha o campo email!")
+            return validado;
+        }   
+        else if ($("#emailrpt").val() == ""){
+            toastr.error("Preencha a repetição email!")
+            return validado;
+        }
+        else if ($("#Senhacd").val() == "") {
+            toastr.error("Preencha o campo senha!")
+            return validado;
+        }
+        else if ($("#senharpt").val() == "") {
+            toastr.error("Preencha a repetição senha!")
+        }else{
+            if ($("#Senhacd").val() != $("#senharpt").val()) {
+                toastr.error("Senhas não se coincidem")
+                return validado;
+            } 
+            else if ($("#emailcd").val() != $("#emailrpt").val()) {
+                toastr.error("Emails não se coincidem")
+                return validado;
+            }
+
+            validado = true;
+
+            return validado;
+        }
+
+    
+    }
+
+</script>
